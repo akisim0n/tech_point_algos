@@ -24,6 +24,7 @@ func mapValidation() {
 
 	var count int
 	fmt.Fscan(in, &count)
+	results := make([]string, count)
 
 	for i := 0; i < count; i++ {
 		var n, m int
@@ -37,12 +38,64 @@ func mapValidation() {
 			}
 			in.ReadLine()
 		}
-		processMap(rows, out)
+		processMap2(rows, results, i)
+	}
+
+	for _, result := range results {
+		fmt.Fprintln(out, result)
 	}
 }
 
-func processMap(arr [][]rune, out *bufio.Writer) {
+func processMap2(arr [][]rune, results []string, index int) {
+	regionMap := make(map[string]bool)
 
+	for i := 0; i < len(arr); i++ {
+		for j := i % 2; j < len(arr[0]); j += 2 {
+			if arr[i][j] != '.' {
+				region := string(arr[i][j])
+				if _, ok := regionMap[region]; ok {
+					results[index] = "NO"
+					return
+				} else {
+					mapDfs(arr, i, j, region)
+					regionMap[region] = true
+				}
+			}
+		}
+	}
+	results[index] = "YES"
+}
+
+func mapDfs(arr [][]rune, index int, jIndex int, region string) {
+	if string(arr[index][jIndex]) != region {
+		return
+	}
+
+	arr[index][jIndex] = '.'
+	// up & right
+	if index > 0 && jIndex < len(arr[0])-1 {
+		mapDfs(arr, index-1, jIndex+1, region)
+	}
+	// right
+	if jIndex < len(arr[0])-2 {
+		mapDfs(arr, index, jIndex+2, region)
+	}
+	// down & right
+	if index < len(arr)-1 && jIndex < len(arr[0])-1 {
+		mapDfs(arr, index+1, jIndex+1, region)
+	}
+	// down & left
+	if index < len(arr)-1 && jIndex > 0 {
+		mapDfs(arr, index+1, jIndex-1, region)
+	}
+	// left
+	if jIndex > 1 {
+		mapDfs(arr, index, jIndex-2, region)
+	}
+	// up & left
+	if index > 0 && jIndex > 0 {
+		mapDfs(arr, index-1, jIndex-1, region)
+	}
 }
 
 func mountainsFromASCII() {
