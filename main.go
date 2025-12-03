@@ -12,7 +12,44 @@ import (
 )
 
 func main() {
-	mapValidation()
+
+}
+
+func arrayToMap[T comparable](arr []T) map[int]T {
+	if len(arr) == 0 {
+		return nil
+	}
+
+	ret := make(map[int]T, len(arr))
+
+	for index, value := range arr {
+		ret[index] = value
+	}
+
+	return ret
+}
+
+func minSubArrayLen(target int, nums []int) int {
+	var left, right, sum int
+	subLen := len(nums)
+
+	for ; right < len(nums); right++ {
+		sum += nums[right]
+
+		for ; sum >= target && left <= right; left++ {
+			if subLen > right-left+1 {
+				subLen = right - left + 1
+			}
+			sum -= nums[left]
+		}
+
+	}
+
+	if sum < target && subLen == len(nums) {
+		return 0
+	}
+
+	return subLen
 }
 
 func mapValidation() {
