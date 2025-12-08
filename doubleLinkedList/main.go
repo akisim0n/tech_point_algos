@@ -50,6 +50,59 @@ func lookup(list *DoubleLinkedList, value int) bool {
 	return false
 }
 
+func insert(list *DoubleLinkedList, value int) {
+	if list == nil || list.Head == nil {
+		return
+	}
+
+	if list.Head.Value > value {
+		list.Head = &Node{Value: value, Prev: nil, Next: list.Head}
+		return
+	} else if list.Head.Value == value {
+		fmt.Printf("Value: %d exists in list\n", value)
+		return
+	}
+
+	head := list.Head
+	for head.Next != nil && head.Next.Value <= value {
+		if head.Next.Value == value {
+			fmt.Printf("Value: %d exists in list\n", value)
+			return
+		}
+		head = head.Next
+	}
+
+	temp := &Node{Value: value, Prev: head, Next: head.Next}
+	if head.Next != nil {
+		head.Next.Prev = temp
+	}
+	head.Next = temp
+}
+
+func deleteNode(list *DoubleLinkedList, value int) {
+	if list == nil || list.Head == nil {
+		return
+	}
+
+	head := list.Head
+	for head != nil {
+		if head.Value == value {
+			if head.Next != nil {
+				head.Next.Prev = head.Prev
+			}
+			if head.Prev != nil {
+				head.Prev.Next = head.Next
+			} else {
+				list.Head = head.Next
+			}
+			return
+		}
+		head = head.Next
+	}
+
+	fmt.Printf("Value: %d does not exist in list\n", value)
+}
+
 func insertBack(list *DoubleLinkedList, value int) {
 	if list == nil || list.Head == nil {
 		return
@@ -99,13 +152,22 @@ func main() {
 
 	printList(myList)
 
-	insertFront(myList, 10)
-	insertFront(myList, 100)
+	insert(myList, 10)
+	insert(myList, 100)
 
 	printList(myList)
 
-	insertBack(myList, 20)
-	insertBack(myList, 200)
+	insert(myList, 20)
+	insert(myList, 200)
+	insert(myList, 0)
+	insert(myList, -5)
+	insert(myList, 11)
+
+	printList(myList)
+
+	deleteNode(myList, 10)
+	deleteNode(myList, -5)
+	deleteNode(myList, 200)
 
 	printList(myList)
 
